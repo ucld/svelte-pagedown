@@ -43,19 +43,36 @@ There are plenty of good editors that are not made for educational purposes:
 
 Builds are available on the [releases page](https://github.com/ucld/svelte-pagedown/releases/):
 
+You first need to import the stylesheet:
 ```html
-<script type="module" src="pagedown.es.js"></script>
-<!-- OR -->
-<script src="pagedown.umd.js"></script>
-
 <link rel="stylesheet" href="pagedown.css">
+<!-- OR -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/svelte-pagedown@latest/dist/pagedown.css">
 ```
 
-Both expose the `Pagedown` component on `window.Pagedown`, which can be called as:
+And then the script as either a UMD or ES Module locally or via jsDelivr:
 
 ```html
 <div id="editor"></div>
+<script src="pagedown.umd.js"></script>
+<!-- OR -->
+<script src="https://cdn.jsdelivr.net/npm/svelte-pagedown@latest/dist/pagedown.umd.js"></script>
 <script>
+  const pagedown = new Pagedown({
+    target: document.querySelector('#editor')
+  })
+</script>
+```
+
+And as an ES Module:
+
+```html
+<div id="editor"></div>
+<script type="module">
+  import Pagedown from './pagedown.es.js'
+  // OR
+  import Pagedown from 'https://cdn.jsdelivr.net/npm/svelte-pagedown@latest/dist/pagedown.es.js'
+  
   const pagedown = new Pagedown({
     target: document.querySelector('#editor')
   })
@@ -71,7 +88,7 @@ The pagedown object has the following properties:
 ## Bugs
 
 * Undoing then, selecting/moving erases redo history.
-  * Similar bug in original Pagedown, except redo then undo erases history.  
+  * Similar bug in original Pagedown, except doing redo then undo erases history.  
     Due to using "modes" instead of some atomic "transactions" for undo history.
 * Blockquotes, code, lists, etc should appear on newline.
   * Something the original Pagedown is much better at.
