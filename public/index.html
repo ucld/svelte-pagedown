@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./pagedown.css">
+    <link rel="stylesheet" href="./demo.css">
+    <script src="./pagedown.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.3.0/markdown-it.min.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        messageStyle: "none",
+        "HTML-CSS": {
+          preferredFont: "TeX",
+          availableFonts: ["STIX","TeX"],
+          linebreaks: { automatic:true },
+          EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+        },
+        tex2jax: {
+          inlineMath: [ ["$", "$"], ["\\\\(","\\\\)"] ],
+          displayMath: [ ["$$","$$"], ["\\[", "\\]"] ],
+          processEscapes: true,
+          ignoreClass: "tex2jax_ignore|dno"
+        },
+        styles: {
+          ".MathJax_Display, .MathJax_Preview, .MathJax_Preview > *": { "background": "inherit" }
+        }
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML-full"></script>
+    <title>Pagedown</title>
+  </head>
+  <body>
+    <div id="editor"></div>
+    <div id="preview"></div>
+    <script>
+      // Prepare Markdown & a preview
+      const preview = document.querySelector('#preview');
+      const md = markdownit({ html: true });
+
+      // If you want to do this properly, make a plugin (try "> ! test")
+      function addSESpoilers (input) {
+        return input.replace(
+            /<blockquote>\n<p>!((.|\n)*?)<\/p>\n<\/blockquote>/g,
+            (...matches) => `<span tabindex="1" class="spoiler">${matches[1]}</span>`
+        );
+      }
+
+      fetch('./demo.md').then(resp => resp.text()).then(text => {
+        const pagedown = new Pagedown({
+            target: document.querySelector('#editor')
+        })
+        pagedown.setListener(() => {
+            const input = pagedown.getValue();
+            const result = md.render(input);
+            preview.innerHTML = addSESpoilers(result);
+            MathJax.Hub.Typeset();
+        });
+        pagedown.setValue(text);
+      }).catch(() => {
+        const pagedown = new Pagedown({
+            target: document.querySelector('#editor')
+        })
+      });
+    </script>
+  </body>
+</html>
